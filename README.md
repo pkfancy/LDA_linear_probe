@@ -79,7 +79,7 @@ def LDA(X: np.ndarray, y: np.ndarray):
     e2 = e1[inds]
     # print(e2)
     U2 = U1[:, inds]
-    return X_mean, U0 @ U2, np.sum(e2)
+    return X_mean, U0 @ P @ U2
 
 def test(X_train, y_train, X_test):
     '''
@@ -91,12 +91,12 @@ def test(X_train, y_train, X_test):
     output:
         y_test_pred: [N2]
     '''
-    X_mean, U, _ = LDA(X_train, y_train)
+    X_mean, U = LDA(X_train, y_train)
     X_train1 = (X_train - X_mean) @ U
     X_test1 = (X_test - X_mean) @ U
     X_cls = np.array([np.mean(X_train1[y_train == y], axis = 0) for y in sorted(list(set(y_train)))])
 
-    D = np.sum(X_test1 ** 2, axis = 1, keepdims=True) + np.sum(X_cls ** 2, axis = 1, keepdims=True).T - 2 * X_test1 @ X_cls
+    D = np.sum(X_test1 ** 2, axis = 1, keepdims=True) + np.sum(X_cls ** 2, axis = 1, keepdims=True).T - 2 * X_test1 @ X_cls.T
     y_test_pred = np.argmin(D, axis = 1)
     return y_test_pred
 ```
